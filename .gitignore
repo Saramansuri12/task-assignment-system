@@ -1,0 +1,5 @@
+task-assi/
+**/__pycache__/
+*.py[cod]
+.env
+*.db
