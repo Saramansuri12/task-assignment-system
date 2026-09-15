@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0B1730">
+<title>AI-Powered Intelligent Employee Task Assignment System · Binary Duo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+html{font-size:clamp(15.5px, 1.15vw, 19px)}
+@media (max-height:780px){html{font-size:clamp(15px, 1vw, 16.5px)}}
+@media (max-height:660px){html{font-size:14.5px}}
+
+:root{
+  --paper:#0B1730; --chalk:#F1F5FF; --dim:#BFCDE8; --faint:#8B9CC2;
+  --rule:rgba(233,240,255,.20); --rule-2:rgba(233,240,255,.38);
+  --cyan:#8FDEFF; --amber:#FFC96A; --green:#9EE6B4; --red:#FF8B95;
+  --display:'Archivo',ui-sans-serif,system-ui,sans-serif;
+  --body:'IBM Plex Sans',ui-sans-serif,system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+  --pad-x:clamp(20px, 4.5vw, 80px);
+  --pad-y:clamp(22px, 4vh, 56px);
+  --wide:1420px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:var(--paper);color:var(--chalk);
+  font-family:var(--body);-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+body{
+  background-image:
+    linear-gradient(rgba(233,240,255,.022) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(233,240,255,.022) 1px,transparent 1px),
+    linear-gradient(rgba(233,240,255,.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(233,240,255,.04) 1px,transparent 1px),
+    radial-gradient(130% 95% at 50% 0%, rgba(24,52,104,.55), transparent 72%);
+  background-size:32px 32px,32px 32px,160px 160px,160px 160px,100% 100%;
+}
+
+#deck{position:fixed;inset:0}
+.sheet{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;
+  padding:var(--pad-y) var(--pad-x) clamp(78px,10vh,108px);overflow-y:auto;overscroll-behavior:contain}
+.sheet.on{display:flex;animation:in .42s cubic-bezier(.2,.75,.2,1) both}
+.sheet>*{width:100%;max-width:var(--wide);margin-left:auto;margin-right:auto;flex-shrink:0}
+@keyframes in{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.sheet.on{animation:none}}
+
+.stamp{position:absolute;top:var(--pad-y);right:var(--pad-x);width:auto!important;max-width:none!important;
+  margin:0!important;text-align:right;font-family:var(--mono);font-size:max(10px,.58rem);
+  letter-spacing:.15em;text-transform:uppercase;color:var(--faint);line-height:2;pointer-events:none}
+.stamp b{color:var(--dim);font-weight:500}
+@media (max-width:900px){.stamp{display:none}}
+
+.head{margin-bottom:1.5rem}
+.tagline{font-family:var(--mono);font-size:max(10.5px,.62rem);letter-spacing:.2em;text-transform:uppercase;
+  color:var(--cyan);display:flex;align-items:center;flex-wrap:wrap;gap:.4em .7em;margin-bottom:1rem;line-height:1.7}
+.tagline::after{content:'';flex:1;height:1px;background:var(--rule);max-width:22vw;min-width:2rem}
+@media (max-width:640px){.tagline{display:block;line-height:1.6}.tagline::after{display:none}}
+h1{font-family:var(--display);font-weight:800;font-size:3.15rem;line-height:1.02;letter-spacing:-.028em}
+h2{font-family:var(--display);font-weight:700;font-size:2.05rem;line-height:1.1;letter-spacing:-.02em}
+h3{font-family:var(--display);font-weight:600;font-size:1rem;letter-spacing:-.005em;color:var(--chalk)}
+.lede{font-size:1.02rem;line-height:1.62;color:var(--dim);font-weight:300;max-width:60ch;margin-top:.85rem}
+.mini{font-family:var(--mono);font-size:max(10px,.58rem);letter-spacing:.14em;text-transform:uppercase;color:var(--faint);line-height:1.9}
+.cy{color:var(--cyan)}.am{color:var(--amber)}
+@media (max-width:640px){h1{font-size:2.1rem}h2{font-size:1.55rem}.lede{font-size:.98rem}}
+
+.act{position:absolute;top:calc(var(--pad-y) + 2.4rem);left:var(--pad-x);width:auto!important;max-width:none!important;
+  margin:0!important;font-family:var(--mono);font-size:max(9.5px,.55rem);letter-spacing:.18em;text-transform:uppercase;
+  color:var(--cyan);opacity:.7;pointer-events:none;line-height:1.2}
+@media (max-width:900px){.act{display:none}}
+
+#track{position:fixed;left:0;bottom:clamp(58px,7.5vh,74px);height:2px;z-index:31;
+  background:var(--cyan);transition:width .45s cubic-bezier(.2,.75,.2,1)}
+#bar{position:fixed;left:0;right:0;bottom:0;z-index:30;height:clamp(58px,7.5vh,74px);
+  display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 clamp(12px,3vw,26px);
+  background:linear-gradient(0deg,#0B1730 64%,rgba(11,23,48,0))}
+.bar-l,.bar-r{display:flex;align-items:center;gap:.55rem;min-width:0}
+.btn{min-width:46px;min-height:46px;border-radius:11px;border:1px solid var(--rule-2);
+  background:rgba(233,240,255,.07);color:var(--chalk);cursor:pointer;display:grid;place-items:center;
+  font-size:1rem;transition:.16s}
+.btn:hover{background:var(--cyan);border-color:var(--cyan);color:#07142B}
+.btn:active{transform:scale(.94)}
+.pager{font-family:var(--mono);font-size:max(10px,.6rem);letter-spacing:.15em;color:var(--dim);white-space:nowrap}
+.pager b{color:var(--chalk);font-weight:500}
+.proj{font-family:var(--mono);font-size:max(10px,.58rem);letter-spacing:.14em;text-transform:uppercase;
+  color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:820px){.proj{display:none}}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+
+#index{position:fixed;inset:0;z-index:40;background:rgba(9,19,42,.98);display:none;
+  padding:var(--pad-y) var(--pad-x);overflow:auto}
+#index.on{display:block}
+#index>*{max-width:var(--wide);margin:0 auto}
+.idx-list{margin-top:1.2rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(15em,1fr));gap:2px}
+.idx-item{display:flex;align-items:baseline;gap:.9em;padding:.85rem .7rem;border:0;border-bottom:1px solid var(--rule);
+  background:none;color:var(--chalk);cursor:pointer;text-align:left;font-family:var(--body);font-size:.95rem;transition:.15s}
+.idx-item:hover{background:rgba(143,222,255,.13);padding-left:1.1rem}
+.idx-item.here{color:var(--cyan)}
+.idx-item span{font-family:var(--mono);font-size:max(10px,.58rem);color:var(--faint);letter-spacing:.14em}
+.idx-item.here span{color:var(--cyan)}
+.idx-act{grid-column:1/-1;font-family:var(--mono);font-size:max(9.5px,.55rem);letter-spacing:.2em;text-transform:uppercase;color:var(--cyan);padding:1.4rem .7rem .4rem;border:0;pointer-events:none}
+.idx-act:first-child{padding-top:.4rem}
+
+.cover h1{max-width:15ch}
+.rule-x{height:1px;background:var(--rule);margin:1.6rem 0 1.2rem}
+.cover-meta{display:flex;flex-wrap:wrap;gap:1rem 3rem}
+.cover-meta .k{font-family:var(--mono);font-size:max(10px,.58rem);letter-spacing:.17em;text-transform:uppercase;color:var(--faint);margin-bottom:.35rem}
+.cover-meta .v{font-family:var(--display);font-weight:500;font-size:.95rem;line-height:1.45}
+.begin{margin:1.9rem auto 0 0;max-width:none;width:auto;display:inline-flex;align-items:center;gap:.7em;
+  border:1px solid var(--rule-2);background:rgba(233,240,255,.06);color:var(--chalk);border-radius:999px;
+  padding:.85rem 1.5rem;cursor:pointer;font-family:var(--mono);font-size:max(10.5px,.62rem);
+  letter-spacing:.2em;text-transform:uppercase;transition:.2s}
+.begin:hover{background:var(--cyan);border-color:var(--cyan);color:#07142B}
+
+.rows{border-top:1px solid var(--rule)}
+details{border-bottom:1px solid var(--rule)}
+summary{list-style:none;cursor:pointer;padding:.9rem 0;display:flex;align-items:center;gap:.9em;min-height:48px}
+summary::-webkit-details-marker{display:none}
+summary .mark{font-family:var(--mono);font-size:max(10px,.58rem);color:var(--cyan);letter-spacing:.14em;flex:none;width:5em;text-transform:uppercase}
+summary h3{flex:1}
+summary .pm{width:20px;height:20px;flex:none;position:relative;transition:.2s}
+summary .pm::before,summary .pm::after{content:'';position:absolute;background:var(--cyan);border-radius:2px;transition:.25s}
+summary .pm::before{left:0;right:0;top:9px;height:2px}
+summary .pm::after{top:0;bottom:0;left:9px;width:2px}
+details[open] .pm::after{transform:scaleY(0)}
+details[open] summary h3{color:var(--cyan)}
+.dbody{padding:0 0 1rem calc(5em + .9rem);color:var(--dim);font-size:.95rem;line-height:1.65;font-weight:300;max-width:70ch}
+@media (max-width:640px){.dbody{padding-left:0}summary .mark{width:3.4em}}
+
+.wl{display:flex;flex-direction:column;gap:.75rem;margin-top:1.2rem}
+.wl-row{display:grid;grid-template-columns:minmax(70px,8em) 1fr 3.6em;align-items:center;gap:1rem}
+.wl-n{font-size:.95rem;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wl-t{height:.6rem;background:rgba(233,240,255,.1);position:relative}
+.wl-f{height:100%;width:0;transition:width .9s cubic-bezier(.2,.75,.2,1)}
+.wl-cap{position:absolute;left:71.4%;top:-.35rem;bottom:-.35rem;width:1px;background:var(--rule-2)}
+.wl-v{font-family:var(--mono);font-size:max(10.5px,.62rem);text-align:right}
+.key{display:flex;flex-wrap:wrap;gap:.6rem 1.6rem;margin-top:1.5rem}
+.key i{display:inline-block;width:.5rem;height:.5rem;margin-right:.5em;vertical-align:middle}
+
+.quad{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15em),1fr));gap:1px;
+  background:var(--rule);border:1px solid var(--rule);margin-top:1.4rem}
+.q{background:var(--paper);padding:1.25rem}
+.q .k{font-family:var(--mono);font-size:max(10px,.58rem);letter-spacing:.17em;text-transform:uppercase;color:var(--cyan);margin-bottom:.65rem}
+.q p{color:var(--dim);font-size:.93rem;line-height:1.58;font-weight:300;margin-top:.5rem}
+
+.pm-grid{display:grid;grid-template-columns:minmax(0,.7fr) minmax(0,1.3fr);gap:clamp(18px,2.6vw,44px);align-items:stretch;margin-top:.4rem}
+.pm-card{border:1px solid var(--cyan);background:rgba(143,222,255,.09);padding:1.5rem;display:flex;flex-direction:column;align-items:center;text-align:center;gap:.7rem}
+.pm-fig{width:5rem;height:5rem;border:1.5px solid var(--cyan);border-radius:50%;position:relative;margin:.4rem 0}
+.pm-fig::before{content:'';position:absolute;top:1rem;left:50%;transform:translateX(-50%);width:1.5rem;height:1.5rem;border-radius:50%;background:var(--cyan);opacity:.85}
+.pm-fig::after{content:'';position:absolute;bottom:.6rem;left:50%;transform:translateX(-50%);width:3rem;height:1.6rem;border-radius:1.3rem 1.3rem 0 0;background:var(--cyan);opacity:.85}
+.pm-nm{font-family:var(--display);font-weight:600;font-size:1.2rem;color:var(--chalk)}
+.pm-rl{font-family:var(--mono);font-size:max(10px,.58rem);color:var(--cyan);letter-spacing:.14em;text-transform:uppercase}
+.pm-desc{color:var(--dim);font-size:.9rem;line-height:1.55;font-weight:300;margin-top:.4rem}
+.pm-box{border:1px solid var(--rule);padding:1.4rem;background:rgba(233,240,255,.035);display:flex;flex-direction:column;gap:.9rem}
+.pm-box .k{font-family:var(--mono);font-size:max(10px,.58rem);letter-spacing:.14em;text-transform:uppercase;color:var(--cyan)}
+.pm-box h3{font-size:1.3rem;font-weight:700;line-height:1.15}
+.pm-list{display:flex;flex-direction:column;gap:.5rem;margin-top:.3rem}
+.pm-item{display:flex;align-items:center;gap:.9em;padding:.75rem .95rem;border:1px solid var(--rule);background:rgba(11,23,48,.5)}
+.pm-oval{flex:none;width:2em;height:2em;border:1px solid var(--cyan);border-radius:50%;display:grid;place-items:center;font-family:var(--mono);font-size:max(10px,.58rem);color:var(--cyan)}
+.pm-txt{font-size:.94rem;color:var(--dim);line-height:1.4;font-weight:300}
+@media (max-width:860px){.pm-grid{grid-template-columns:1fr}}
+
+.fields-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:.4rem}
+.fields-col{border:1px solid var(--rule);padding:1.2rem;background:rgba(233,240,255,.03);display:flex;flex-direction:column}
+.fields-core{border-color:var(--cyan);background:rgba(143,222,255,.08)}
+.fields-h{margin-bottom:1rem;padding-bottom:.75rem;border-bottom:1px solid var(--rule)}
+.fields-k{font-family:var(--mono);font-size:max(10px,.58rem);letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:.35rem}
+.fields-core .fields-k{color:var(--cyan)}
+.fields-t{font-family:var(--display);font-weight:600;font-size:1.02rem;color:var(--chalk);line-height:1.3}
+.fields-list{display:flex;flex-direction:column;gap:.6rem}
+.field-item{display:grid;grid-template-columns:2.4em 1fr;gap:.6em;align-items:start}
+.field-item .field-n{font-family:var(--mono);font-size:max(10.5px,.62rem);color:var(--cyan);letter-spacing:.06em;padding-top:.2em}
+.field-item.opt .field-n{color:var(--faint);font-size:1.15rem;padding-top:0;line-height:1}
+.field-t{font-family:var(--display);font-weight:500;font-size:.94rem;color:var(--chalk);line-height:1.3}
+.field-d{font-size:.82rem;color:var(--faint);font-weight:300;margin-top:.2em;line-height:1.4}
+.crit-chips{display:flex;gap:.35rem;margin-top:.4em;flex-wrap:wrap}
+.crit-chip{font-family:var(--mono);font-size:max(9px,.5rem);letter-spacing:.1em;padding:.25rem .55rem;border:1px solid var(--rule-2);text-transform:uppercase;color:var(--dim)}
+.crit-chip.lo{border-color:var(--green);color:var(--green)}
+.crit-chip.md{border-color:var(--amber);color:var(--amber)}
+.crit-chip.hi{border-color:var(--red);color:var(--red)}
+
+.flow-bar{display:grid;grid-template-columns:1fr auto 1fr auto 1fr auto 1fr;gap:.4rem;align-items:center;margin-top:1.2rem;padding:1rem;border:1px solid var(--rule);background:rgba(11,23,48,.5)}
+.flow-step{text-align:center;padding:.4rem}
+.fs-n{font-family:var(--mono);font-size:max(10px,.58rem);color:var(--cyan);letter-spacing:.14em;margin-bottom:.3rem}
+.fs-t{font-family:var(--display);font-weight:500;font-size:.88rem;color:var(--chalk);line-height:1.35}
+.flow-arrow{color:var(--rule-2);font-size:1.1rem;font-family:var(--mono)}
+.flow-arrow::after{content:'→'}
+@media (max-width:820px){
+  .fields-grid{grid-template-columns:1fr}
+  .flow-bar{grid-template-columns:1fr;gap:.3rem;padding:.8rem}
+  .flow-arrow{padding:.15rem 0}
+  .flow-arrow::after{content:'↓'}
+}
+
+.pipe-grid{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(18px,2.6vw,44px);align-items:stretch}
+.pipe{display:flex;flex-direction:column;justify-content:center}
+.node{display:grid;grid-template-columns:2.6em 1fr;gap:.6em;align-items:center;text-align:left;
+  background:none;border:0;border-bottom:1px solid var(--rule);color:var(--chalk);cursor:pointer;
+  padding:.62rem .5rem;font-family:var(--body);transition:.15s;min-height:44px}
+.node:hover{background:rgba(233,240,255,.07)}
+.node.sel{background:rgba(143,222,255,.16);box-shadow:inset 3px 0 0 var(--cyan)}
+.node .i{font-family:var(--mono);font-size:max(10px,.58rem);color:var(--faint);letter-spacing:.12em}
+.node.sel .i{color:var(--cyan)}
+.node .nm{font-family:var(--display);font-weight:500;font-size:.97rem}
+.detail{border:1px solid var(--rule);padding:1.5rem;display:flex;flex-direction:column;background:rgba(233,240,255,.035)}
+.detail h3{font-size:1.5rem;font-weight:700;margin:.5rem 0 .7rem}
+.detail p{color:var(--dim);font-size:.97rem;line-height:1.62;font-weight:300}
+.io{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-top:auto;padding-top:1.2rem}
+.io .k{font-family:var(--mono);font-size:max(10px,.56rem);letter-spacing:.15em;text-transform:uppercase;color:var(--faint);margin-bottom:.4rem}
+.io .v{font-size:.93rem;font-weight:300;line-height:1.45;color:var(--chalk)}
+.tags{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:1rem}
+.tag{font-family:var(--mono);font-size:max(10px,.56rem);letter-spacing:.12em;text-transform:uppercase;
+  border:1px solid var(--rule-2);padding:.35rem .7rem;color:var(--dim)}
+@media (max-width:860px){.pipe-grid{grid-template-columns:1fr}.io{grid-template-columns:1fr}}
+
+.crit-hero{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin:.7rem 0 1.4rem}
+.cchip{padding:1rem 1.1rem;border:1px solid var(--rule-2);cursor:pointer;text-align:left;
+  background:rgba(233,240,255,.03);color:var(--chalk);font-family:var(--body);transition:.16s;min-height:5.2rem;display:flex;flex-direction:column;justify-content:space-between}
+.cchip:hover{border-color:var(--cyan)}
+.cchip.sel{border-width:2px;padding:calc(1rem - 1px) calc(1.1rem - 1px)}
+.cchip.sel[data-c="low"]{border-color:var(--green);background:rgba(158,230,180,.08)}
+.cchip.sel[data-c="med"]{border-color:var(--amber);background:rgba(255,201,106,.10)}
+.cchip.sel[data-c="high"]{border-color:var(--red);background:rgba(255,139,149,.10)}
+.cchip .lv{font-family:var(--mono);font-size:max(10px,.58rem);letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+.cchip.sel[data-c="low"] .lv{color:var(--green)}
+.cchip.sel[data-c="med"] .lv{color:var(--amber)}
+.cchip.sel[data-c="high"] .lv{color:var(--red)}
+.cchip .nm{font-family:var(--display);font-weight:600;font-size:1.1rem;margin-top:.4rem}
+.cchip .ex{font-size:.82rem;color:var(--faint);font-weight:300;margin-top:.3rem;line-height:1.4}
+@media (max-width:640px){.crit-hero{grid-template-columns:1fr}}
+
+.crit-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:clamp(18px,2.6vw,40px)}
+.crit-desc{border:1px solid var(--rule);padding:1.4rem;background:rgba(233,240,255,.035)}
+.crit-desc h3{font-size:1.35rem;font-weight:700;margin-bottom:.5rem}
+.crit-desc p{color:var(--dim);font-size:.96rem;line-height:1.6;font-weight:300;margin-bottom:.9rem}
+.crit-weights{padding:1.2rem;border:1px solid var(--rule);background:rgba(233,240,255,.02)}
+.crit-w-k{font-family:var(--mono);font-size:max(10px,.58rem);letter-spacing:.15em;text-transform:uppercase;color:var(--cyan);margin-bottom:.9rem}
+.crit-wrow{display:grid;grid-template-columns:minmax(0,8em) 1fr 3em;gap:.7rem;align-items:center;margin-bottom:.55rem}
+.crit-wrow .l{font-size:.9rem;color:var(--dim);font-weight:300}
+.crit-wt{height:.5rem;background:rgba(233,240,255,.1);position:relative}
+.crit-wt .f{position:absolute;top:0;left:0;bottom:0;background:var(--cyan);transition:width .5s cubic-bezier(.2,.75,.2,1)}
+.crit-wrow .v{font-family:var(--mono);font-size:max(10px,.58rem);color:var(--chalk);text-align:right}
+@media (max-width:860px){.crit-grid{grid-template-columns:1fr}}
+
+.cf-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:clamp(18px,2.6vw,40px);align-items:stretch;margin-top:.3rem}
+.cf-questions{display:flex;flex-direction:column;gap:.9rem}
+.cf-qbox{border:1px solid var(--rule);padding:1.2rem 1.3rem;background:rgba(233,240,255,.03);display:flex;flex-direction:column;gap:.5rem}
+.cf-qbox.new{border-color:var(--cyan);background:rgba(143,222,255,.09)}
+.cf-q-k{font-family:var(--mono);font-size:max(10px,.58rem);letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+.cf-qbox.new .cf-q-k{color:var(--cyan)}
+.cf-q{font-family:var(--display);font-weight:600;font-size:1.02rem;color:var(--chalk);line-height:1.35}
+.cf-qbox.new .cf-q{font-size:1.05rem}
+.cf-q-r{font-size:.88rem;color:var(--dim);line-height:1.55;font-weight:300;margin-top:.15rem}
+
+.cf-flow-wrap{border:1px solid var(--rule);padding:1.3rem 1.4rem;background:rgba(233,240,255,.02);display:flex;flex-direction:column}
+.cf-flow-k{font-family:var(--mono);font-size:max(10px,.58rem);letter-spacing:.16em;text-transform:uppercase;color:var(--cyan);margin-bottom:1rem}
+.cf-flow{display:flex;flex-direction:column;align-items:stretch}
+.cf-node{border:1px solid var(--rule-2);background:rgba(233,240,255,.05);padding:.65rem 1rem;font-family:var(--body);font-size:.9rem;color:var(--chalk);text-align:center;line-height:1.35}
+.cf-node.hi{border-color:var(--cyan);background:rgba(143,222,255,.16);color:var(--chalk);font-weight:500}
+.cf-node.start{border-color:var(--amber);color:var(--amber);font-family:var(--mono);font-size:max(10px,.58rem);letter-spacing:.14em;text-transform:uppercase}
+.cf-node.end{background:var(--cyan);border-color:var(--cyan);color:#07142B;font-weight:600;font-family:var(--display);text-transform:uppercase;letter-spacing:.06em;font-size:.9rem}
+.cf-arrow{height:.9rem;position:relative}
+.cf-arrow::before{content:'';position:absolute;left:50%;top:0;bottom:2px;width:1px;background:var(--rule-2);transform:translateX(-50%)}
+.cf-arrow::after{content:'';position:absolute;left:50%;bottom:0;width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:5px solid var(--rule-2);transform:translateX(-50%)}
+@media (max-width:860px){.cf-grid{grid-template-columns:1fr}}
+
+.tabs{display:flex;gap:.4rem;flex-wrap:wrap;margin:.4rem 0 1.3rem}
+.tab{font-family:var(--mono);font-size:max(10.5px,.62rem);letter-spacing:.15em;text-transform:uppercase;
+  border:1px solid var(--rule-2);background:rgba(233,240,255,.05);color:var(--dim);
+  padding:.75rem 1.1rem;cursor:pointer;min-height:46px;transition:.16s}
+.tab:hover{color:var(--chalk);border-color:var(--cyan)}
+.tab.sel{background:var(--cyan);border-color:var(--cyan);color:#07142B;font-weight:500}
+.pane{display:none}
+.pane.on{display:block;animation:in .32s cubic-bezier(.2,.75,.2,1) both}
+
+.graph{position:relative;height:clamp(190px,30vh,300px);border:1px solid var(--rule);margin-top:1.1rem;overflow:hidden;background:rgba(233,240,255,.02)}
+.gn{position:absolute;transform:translate(-50%,-50%);font-family:var(--mono);font-size:max(10px,.58rem);
+  letter-spacing:.07em;padding:.45em .8em;border:1px solid var(--rule-2);background:#0D1B38;white-space:nowrap;color:var(--chalk)}
+.gn.core{background:var(--cyan);border-color:var(--cyan);color:#07142B;font-weight:500}
+.gn.who{border-color:rgba(255,201,106,.6);color:var(--amber)}
+
+.cands{display:flex;flex-direction:column;gap:.5rem;margin-top:1.1rem}
+.cand{display:flex;flex-wrap:wrap;gap:.6rem 1.2rem;justify-content:space-between;align-items:center;
+  border:1px solid var(--rule);padding:.95rem 1.1rem}
+.cand.win{border-color:var(--cyan);background:rgba(143,222,255,.11)}
+.cand .who{font-family:var(--display);font-weight:600;font-size:.98rem}
+.cand .sub{font-size:.85rem;color:var(--faint);margin-top:.2rem;font-weight:300}
+.cand .m{font-family:var(--mono);font-size:max(10.5px,.62rem);color:var(--dim);letter-spacing:.08em;line-height:1.8;text-align:right}
+.cand .m b{color:var(--chalk);font-weight:500}
+
+.meter{height:.65rem;position:relative;margin:1.6rem 0 .6rem;background:linear-gradient(90deg,var(--cyan),var(--amber),var(--red))}
+.needle{position:absolute;top:-.45rem;bottom:-.45rem;width:3px;background:var(--chalk);transition:left .7s cubic-bezier(.2,.75,.2,1)}
+.mscale{display:flex;justify-content:space-between;font-family:var(--mono);font-size:max(10px,.58rem);letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+
+.people{display:flex;flex-wrap:wrap;gap:.4rem;margin:1rem 0 1.3rem}
+.pbtn{font-family:var(--body);font-size:.95rem;border:1px solid var(--rule-2);background:rgba(233,240,255,.05);
+  color:var(--dim);padding:.72rem 1.1rem;cursor:pointer;min-height:46px;transition:.16s}
+.pbtn:hover{color:var(--chalk);border-color:var(--cyan)}
+.pbtn.sel{background:rgba(143,222,255,.18);border-color:var(--cyan);color:var(--chalk);font-weight:500}
+.srows{display:flex;flex-direction:column;gap:.65rem}
+.srow{display:grid;grid-template-columns:minmax(0,16em) 1fr 3.6em;gap:1rem;align-items:center}
+.srow .l{font-size:.94rem;color:var(--dim);font-weight:300;line-height:1.35}
+.st{height:.5rem;background:rgba(233,240,255,.1);position:relative}
+.st .mid{position:absolute;left:50%;top:-.25rem;bottom:-.25rem;width:1px;background:var(--rule-2)}
+.sb{position:absolute;top:0;bottom:0;transition:width .6s cubic-bezier(.2,.75,.2,1)}
+.srow .v{font-family:var(--mono);font-size:max(10.5px,.62rem);text-align:right}
+.verdict-line{font-size:.97rem;color:var(--dim);line-height:1.62;font-weight:300;margin-top:1.4rem;max-width:70ch;
+  border-left:2px solid var(--cyan);padding-left:1rem}
+@media (max-width:600px){.srow{grid-template-columns:1fr 3.6em;grid-template-areas:'l l' 'b v';gap:.4rem 1rem}
+  .srow .l{grid-area:l}.st{grid-area:b}.srow .v{grid-area:v}}
+
+.wi-radios{display:flex;flex-direction:column;gap:.5rem;margin:1rem 0 1.2rem}
+.wir{display:flex;align-items:flex-start;gap:.85em;border:1px solid var(--rule-2);background:rgba(233,240,255,.04);
+  color:var(--dim);padding:.9rem 1.1rem;cursor:pointer;font-family:var(--body);font-size:.95rem;
+  min-height:48px;text-align:left;transition:.16s;width:100%}
+.wir:hover{color:var(--chalk);border-color:var(--cyan)}
+.wir.on{background:rgba(143,222,255,.13);border-color:var(--cyan);color:var(--chalk)}
+.wir .dot{width:1.1rem;height:1.1rem;border:1.5px solid var(--rule-2);border-radius:50%;flex:none;margin-top:.15em;position:relative}
+.wir.on .dot{border-color:var(--cyan)}
+.wir.on .dot::after{content:'';position:absolute;inset:.22rem;background:var(--cyan);border-radius:50%}
+.wir .txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:.3em}
+.wir .lbl{display:block;font-family:var(--display);font-weight:500;font-size:1rem;color:var(--chalk);line-height:1.3}
+.wir .sub{display:block;font-size:.86rem;color:var(--faint);font-weight:300;line-height:1.5}
+
+.wiprojects{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:.4rem;min-height:12rem}
+.wipp{border:1px solid var(--rule);padding:1.2rem;background:rgba(233,240,255,.03);transition:.3s;display:flex;flex-direction:column;gap:.7rem}
+.wipp.crit{border-color:rgba(255,139,149,.55);background:rgba(255,139,149,.05)}
+.wipp.hide{opacity:.25}
+.wipp-h{display:flex;align-items:center;gap:.6em;flex-wrap:wrap}
+.wipp-t{font-family:var(--display);font-weight:600;font-size:1.02rem;flex:1;min-width:0}
+.wipp-c{font-family:var(--mono);font-size:max(9.5px,.55rem);letter-spacing:.12em;padding:.3rem .55rem;border:1px solid var(--rule-2);text-transform:uppercase;color:var(--dim)}
+.wipp-c.crit{background:var(--red);color:#3a0508;border-color:var(--red);font-weight:600}
+.wipp-c.norm{color:var(--cyan);border-color:var(--cyan)}
+.wipp-team{font-size:.9rem;color:var(--dim);font-weight:300;line-height:1.55}
+.wipp-m{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem;padding-top:.7rem;border-top:1px solid var(--rule);margin-top:auto}
+.wipp-mi .k{font-family:var(--mono);font-size:max(9px,.52rem);letter-spacing:.12em;color:var(--faint);text-transform:uppercase;margin-bottom:.15rem}
+.wipp-mi .v{font-family:var(--display);font-weight:600;font-size:1.1rem;transition:color .3s}
+.wi-verdict{margin-top:1.1rem;padding:1rem 1.2rem;border-left:2px solid var(--cyan);background:rgba(143,222,255,.07);color:var(--dim);font-size:.95rem;line-height:1.6;font-weight:300}
+@media (max-width:720px){.wiprojects{grid-template-columns:1fr}.wipp-m{grid-template-columns:1fr 1fr 1fr}}
+
+.jrn-grid{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(18px,2.6vw,44px);align-items:stretch}
+.jsteps{display:flex;flex-direction:column;justify-content:center}
+.jnode{display:grid;grid-template-columns:2.6em 1fr;gap:.6em;align-items:center;text-align:left;
+  background:none;border:0;border-bottom:1px solid var(--rule);color:var(--chalk);cursor:pointer;
+  padding:.62rem .5rem;font-family:var(--body);transition:.15s;min-height:44px}
+.jnode:hover{background:rgba(233,240,255,.07)}
+.jnode.sel{background:rgba(143,222,255,.16);box-shadow:inset 3px 0 0 var(--cyan)}
+.jnode .i{font-family:var(--mono);font-size:max(10px,.58rem);color:var(--faint);letter-spacing:.12em}
+.jnode.sel .i{color:var(--cyan)}
+.jnode .nm{font-family:var(--display);font-weight:500;font-size:.97rem}
+.jdetail{border:1px solid var(--rule);padding:1.5rem;display:flex;flex-direction:column;background:rgba(233,240,255,.035)}
+.jdetail h3{font-size:1.5rem;font-weight:700;margin:.5rem 0 .7rem}
+.jdetail p{color:var(--dim);font-size:.97rem;line-height:1.62;font-weight:300}
+.jscreen{margin-top:auto;padding-top:1.2rem}
+.jscreen .k{font-family:var(--mono);font-size:max(10px,.56rem);letter-spacing:.15em;text-transform:uppercase;color:var(--faint);margin-bottom:.5rem}
+.jscreen .v{font-family:var(--display);font-weight:500;font-size:.98rem;color:var(--cyan);border-left:2px solid var(--cyan);padding-left:.7rem;line-height:1.4}
+@media (max-width:860px){.jrn-grid{grid-template-columns:1fr}}
+
+.end h1{font-size:4rem}
+.sign{display:flex;flex-wrap:wrap;gap:1rem 3rem;margin-top:2rem}
+.sign .k{font-family:var(--mono);font-size:max(10px,.58rem);letter-spacing:.17em;text-transform:uppercase;color:var(--faint);margin-bottom:.4rem}
+.sign .v{font-family:var(--display);font-weight:500;font-size:1.15rem}
+@media (max-width:640px){.end h1{font-size:2.5rem}}
+</style>
+</head>
+<body>
+
+<div id="deck">
+
+  <!-- 01 COVER -->
+  <section class="sheet cover" data-t="Title" data-a="Introduction">
+    <div class="tagline">Nexus Hackathon · GLS University</div>
+    <h1>AI-Powered Intelligent Employee Task Assignment System</h1>
+    <p class="lede">Picks the right people for the right work. Uses <span class="cy">Capability Fit</span> and criticality-aware scoring, so top talent stays reserved for work that actually needs them.</p>
+    <div class="rule-x"></div>
+    <div class="cover-meta">
+      <div><div class="k">Team</div><div class="v">Binary Duo · ID 11</div></div>
+      <div><div class="k">Presented by</div><div class="v">Divya Kansara · Sara Mansuri</div></div>
+      <div><div class="k">Focus</div><div class="v">Project manager view,<br>Capability Fit and criticality</div></div>
+    </div>
+    <button class="begin" data-go="1">Begin the walk-through →</button>
+  </section>
+
+  <!-- 02 PROBLEM -->
+  <section class="sheet" data-t="The problem" data-a="Part 1 · Why we built it">
+    <div class="head">
+      <div class="tagline">The problem</div>
+      <h2>Picking a team today<br>runs on one manager's memory.</h2>
+      <p class="lede">Not because managers are careless. Because no one can hold forty people's skills, free hours, and how urgent each project is, all in their head at once.</p>
+    </div>
+    <div class="rows">
+      <details open>
+        <summary><span class="mark">One</span><h3>It takes days</h3><span class="pm"></span></summary>
+        <div class="dbody">Before any real work starts, someone has to recall who did what, ask around to see who is free, and put it all in a sheet that is out of date by the time it is saved. The project clock is already running.</div>
+      </details>
+      <details>
+        <summary><span class="mark">Two</span><h3>The same star performers get picked for everything</h3><span class="pm"></span></summary>
+        <div class="dbody">Managers pick the people they remember and trust. So the top few names get chosen for every project, no matter how routine. They burn out, and mid-level staff who could handle the work never get a chance to grow.</div>
+      </details>
+      <details>
+        <summary><span class="mark">Three</span><h3>It ignores how busy people already are</h3><span class="pm"></span></summary>
+        <div class="dbody">Someone can look perfect for the job and still have no free hours this month. Nobody checks that at the start, so it shows up later as a missed deadline.</div>
+      </details>
+      <details>
+        <summary><span class="mark">Four</span><h3>It treats every project the same</h3><span class="pm"></span></summary>
+        <div class="dbody">A quick internal cleanup and a production outage both take whichever people are free at that moment. The result is that urgent work often ends up with the wrong team, while the top talent is quietly locked into low-priority projects.</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- 03 COST -->
+  <section class="sheet" data-t="What it costs" data-a="Part 1 · Why we built it">
+    <div class="head">
+      <div class="tagline">What it costs</div>
+      <h2>The same people end up carrying everything.</h2>
+      <p class="lede">This is what a team looks like when free hours are never checked, criticality is not tracked, and the top talent keeps getting picked by default. Two people are working past a full week. Two are barely used.</p>
+    </div>
+    <div class="wl" id="wl">
+      <div class="wl-row"><div class="wl-n">Aarav Mehta</div><div class="wl-t"><span class="wl-cap"></span><div class="wl-f" data-v="132" style="background:var(--red)"></div></div><div class="wl-v" style="color:var(--red)">132%</div></div>
+      <div class="wl-row"><div class="wl-n">Riya Shah</div><div class="wl-t"><span class="wl-cap"></span><div class="wl-f" data-v="118" style="background:var(--red)"></div></div><div class="wl-v" style="color:var(--red)">118%</div></div>
+      <div class="wl-row"><div class="wl-n">Karan Patel</div><div class="wl-t"><span class="wl-cap"></span><div class="wl-f" data-v="94" style="background:var(--cyan)"></div></div><div class="wl-v" style="color:var(--cyan)">94%</div></div>
+      <div class="wl-row"><div class="wl-n">Nisha Verma</div><div class="wl-t"><span class="wl-cap"></span><div class="wl-f" data-v="46" style="background:var(--amber)"></div></div><div class="wl-v" style="color:var(--amber)">46%</div></div>
+      <div class="wl-row"><div class="wl-n">Meera Joshi</div><div class="wl-t"><span class="wl-cap"></span><div class="wl-f" data-v="28" style="background:var(--amber)"></div></div><div class="wl-v" style="color:var(--amber)">28%</div></div>
+    </div>
+    <div class="key mini">
+      <span><i style="background:var(--red)"></i>Working past full time</span>
+      <span><i style="background:var(--cyan)"></i>About right</span>
+      <span><i style="background:var(--amber)"></i>Free time going spare</span>
+      <span>Line = a full workload</span>
+    </div>
+  </section>
+
+  <!-- 04 WHAT WE BUILT -->
+  <section class="sheet" data-t="What we built" data-a="Part 2 · What it is">
+    <div class="head">
+      <div class="tagline">What we built</div>
+      <h2>It doesn't replace the manager.<br>It gives them <span class="cy">proof</span> instead of a guess.</h2>
+    </div>
+    <div class="quad">
+      <div class="q"><div class="k">It reads</div><h3>You describe, it understands</h3><p>Write the project in normal words. The AI extracts the skills, roles and tools. The manager validates before anything runs.</p></div>
+      <div class="q"><div class="k">It picks smart</div><h3>Not the best, the right person</h3><p>Uses Capability Fit: the least-overqualified person who can deliver reliably. Reserves top talent for work that actually needs them.</p></div>
+      <div class="q"><div class="k">It weighs</div><h3>Skills, hours, and urgency</h3><p>Every recommendation balances these together. Criticality (Low, Medium, High) adjusts how the weights are set.</p></div>
+      <div class="q"><div class="k">It explains</div><h3>Tells you why</h3><p>Every name comes with the reasons behind it, so you can agree with it or overrule it.</p></div>
+    </div>
+  </section>
+
+  <!-- 05 WHO USES IT -->
+  <section class="sheet" data-t="Who uses it" data-a="Part 2 · What it is">
+    <div class="head">
+      <div class="tagline">Who uses the system</div>
+      <h2>Built for one core user:<br>the <span class="cy">project manager</span>.</h2>
+      <p class="lede">This version focuses on the person who owns the plan. Later releases can bring in an HR admin view for maintaining employee data, and a team member view for personal assignments.</p>
+    </div>
+    <div class="pm-grid">
+      <div class="pm-card">
+        <div class="pm-fig"></div>
+        <div class="pm-nm">Project Manager</div>
+        <div class="pm-rl">Runs the project</div>
+        <div class="pm-desc">The person who owns the plan. Uses the system to describe a project, set its criticality, review the suggested team, and approve or adjust it before work starts.</div>
+      </div>
+      <div class="pm-box">
+        <div class="k">What the manager can do</div>
+        <h3>Six actions inside the system</h3>
+        <div class="pm-list">
+          <div class="pm-item"><span class="pm-oval">01</span><span class="pm-txt">Describe a new project in plain words</span></div>
+          <div class="pm-item"><span class="pm-oval">02</span><span class="pm-txt">Set the project criticality (Low, Medium, High)</span></div>
+          <div class="pm-item"><span class="pm-oval">03</span><span class="pm-txt">Validate the requirements AI extracted from the description</span></div>
+          <div class="pm-item"><span class="pm-oval">04</span><span class="pm-txt">Review the team the system suggests</span></div>
+          <div class="pm-item"><span class="pm-oval">05</span><span class="pm-txt">Read the reasons behind each pick</span></div>
+          <div class="pm-item"><span class="pm-oval">06</span><span class="pm-txt">Try a change, then approve the final team</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 WHAT THE MANAGER PROVIDES -->
+  <section class="sheet" data-t="What the manager provides" data-a="Part 2 · What it is">
+    <div class="head">
+      <div class="tagline">What the manager provides</div>
+      <h2>Ask only what the manager<br>actually knows.</h2>
+      <p class="lede">The form asks for the essentials up front. AI reads the description and fills in the technical requirements. The manager validates the AI's reading before optimization runs.</p>
+    </div>
+    <div class="fields-grid">
+      <div class="fields-col fields-core">
+        <div class="fields-h">
+          <div class="fields-k">Core · always required</div>
+          <div class="fields-t">Five things the manager genuinely knows</div>
+        </div>
+        <div class="fields-list">
+          <div class="field-item"><span class="field-n">01</span><div><div class="field-t">Project Name</div><div class="field-d">A short name for the project</div></div></div>
+          <div class="field-item"><span class="field-n">02</span><div><div class="field-t">Project Description</div><div class="field-d">A paragraph in plain words. AI reads the requirements from here.</div></div></div>
+          <div class="field-item"><span class="field-n">03</span><div><div class="field-t">Team Size</div><div class="field-d">Roughly how many people this needs</div></div></div>
+          <div class="field-item"><span class="field-n">04</span><div><div class="field-t">Deadline</div><div class="field-d">When it needs to be done</div></div></div>
+          <div class="field-item"><span class="field-n">05</span><div><div class="field-t">Criticality</div><div class="field-d">Pick one</div><div class="crit-chips"><span class="crit-chip lo">Low</span><span class="crit-chip md">Medium</span><span class="crit-chip hi">High</span></div></div></div>
+        </div>
+      </div>
+      <div class="fields-col fields-opt">
+        <div class="fields-h">
+          <div class="fields-k">Optional · only if known</div>
+          <div class="fields-t">Nice to have, never forced</div>
+        </div>
+        <div class="fields-list">
+          <div class="field-item opt"><span class="field-n">·</span><div><div class="field-t">Number of integrations</div><div class="field-d">Only if the manager has already scoped it</div></div></div>
+          <div class="field-item opt"><span class="field-n">·</span><div><div class="field-t">Required availability level</div><div class="field-d">Only if uptime targets are already defined</div></div></div>
+          <div class="field-item opt"><span class="field-n">·</span><div><div class="field-t">Security level</div><div class="field-d">Only if the security tier is known</div></div></div>
+          <div class="field-item opt"><span class="field-n">·</span><div><div class="field-t">Compliance requirements</div><div class="field-d">Only if regulatory scope is defined</div></div></div>
+          <div class="mini" style="margin-top:.6rem;padding-top:.6rem;border-top:1px solid var(--rule)">If the manager doesn't know, the AI infers a reasonable default from the description. The manager confirms it in the next step.</div>
+        </div>
+      </div>
+    </div>
+    <div class="flow-bar">
+      <div class="flow-step"><div class="fs-n">01</div><div class="fs-t">Manager provides core info</div></div>
+      <div class="flow-arrow"></div>
+      <div class="flow-step"><div class="fs-n">02</div><div class="fs-t">AI extracts requirements</div></div>
+      <div class="flow-arrow"></div>
+      <div class="flow-step"><div class="fs-n">03</div><div class="fs-t">Manager validates</div></div>
+      <div class="flow-arrow"></div>
+      <div class="flow-step"><div class="fs-n">04</div><div class="fs-t">Team optimization runs</div></div>
+    </div>
+  </section>
+
+  <!-- 07 USER JOURNEY -->
+  <section class="sheet" data-t="User journey" data-a="Part 2 · What it is">
+    <div class="head">
+      <div class="tagline">The user journey · tap any step</div>
+      <h2>What the manager clicks,<br>in the order they click it.</h2>
+    </div>
+    <div class="jrn-grid">
+      <div class="jsteps" id="jsteps"></div>
+      <div class="jdetail">
+        <div class="mini" id="jKick">Step 01</div>
+        <h3 id="jTitle"></h3>
+        <p id="jBody"></p>
+        <div class="jscreen">
+          <div class="k">Where it happens</div>
+          <div class="v" id="jScreen"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 08 HOW IT WORKS -->
+  <section class="sheet" data-t="How it works" data-a="Part 3 · How it thinks">
+    <div class="head">
+      <div class="tagline">How it works · tap any step</div>
+    </div>
+    <div class="pipe-grid">
+      <div class="pipe" id="pipe"></div>
+      <div class="detail" id="detail">
+        <div class="mini" id="dKick">Step 01</div>
+        <h3 id="dTitle"></h3>
+        <p id="dBody"></p>
+        <div class="tags" id="dTags"></div>
+        <div class="io">
+          <div><div class="k">What goes in</div><div class="v" id="dIn"></div></div>
+          <div><div class="k">What comes out</div><div class="v" id="dOut"></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 09 CRITICALITY -->
+  <section class="sheet" data-t="Task criticality" data-a="Part 3 · How it thinks">
+    <div class="head">
+      <div class="tagline">Task criticality · tap any level</div>
+      <h2>Not every task carries<br>the same weight.</h2>
+      <p class="lede">Every project gets a criticality level when it is created. The system then shifts how it weighs skills, availability, and past performance based on that level. Higher criticality means skill match matters more, and availability alone can no longer carry a decision.</p>
+    </div>
+    <div class="crit-hero" id="critHero">
+      <button class="cchip" data-c="low"><div class="lv">01 · Low</div><div><div class="nm">Low</div><div class="ex">Internal cleanup, docs, small polish work</div></div></button>
+      <button class="cchip" data-c="med"><div class="lv">02 · Medium</div><div><div class="nm">Medium</div><div class="ex">Standard client project on a comfortable deadline</div></div></button>
+      <button class="cchip sel" data-c="high"><div class="lv">03 · High</div><div><div class="nm">High</div><div class="ex">Client milestone, launch push, production outage</div></div></button>
+    </div>
+    <div class="crit-grid">
+      <div class="crit-desc">
+        <h3 id="ctName"></h3>
+        <p id="ctDesc"></p>
+        <p id="ctPolicy" style="color:var(--chalk)"></p>
+      </div>
+      <div class="crit-weights">
+        <div class="crit-w-k">How the scoring shifts</div>
+        <div class="crit-wrow"><div class="l">Skill match</div><div class="crit-wt"><div class="f" id="wSkill"></div></div><div class="v" id="vSkill"></div></div>
+        <div class="crit-wrow"><div class="l">Past performance</div><div class="crit-wt"><div class="f" id="wPerf"></div></div><div class="v" id="vPerf"></div></div>
+        <div class="crit-wrow"><div class="l">Availability</div><div class="crit-wt"><div class="f" id="wAvail"></div></div><div class="v" id="vAvail"></div></div>
+        <div class="crit-wrow"><div class="l">Similar past work</div><div class="crit-wt"><div class="f" id="wPast"></div></div><div class="v" id="vPast"></div></div>
+        <div class="mini" style="margin-top:.9rem">The weights change with the criticality level. Higher levels lean more on proof.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10 CAPABILITY FIT -->
+  <section class="sheet" data-t="Capability Fit" data-a="Part 3 · How it thinks">
+    <div class="head">
+      <div class="tagline">Capability Fit · the rule behind every pick</div>
+      <h2>Not the best person.<br>The <span class="cy">right</span> person.</h2>
+      <p class="lede">Most systems ask "who is the best?" and end up picking the same top people until they burn out. Capability Fit asks a smarter question, and follows a stricter flow to answer it.</p>
+    </div>
+    <div class="cf-grid">
+      <div class="cf-questions">
+        <div class="cf-qbox">
+          <div class="cf-q-k">The old question</div>
+          <div class="cf-q">"Who is the best person for this task?"</div>
+          <div class="cf-q-r">Top talent gets picked for everything. Star performers burn out on routine work. Mid-level staff does not grow. When high-criticality work arrives, the best people are already stretched too thin to handle it well.</div>
+        </div>
+        <div class="cf-qbox new">
+          <div class="cf-q-k">Capability Fit asks</div>
+          <div class="cf-q">"Who is the least-overqualified available person who can complete this task reliably, while maintaining project risk and team performance?"</div>
+          <div class="cf-q-r">Top talent is reserved for work that genuinely needs them. Mid-level staff gets meaningful projects and grows. When high-criticality work lands, top talent is available and fresh.</div>
+        </div>
+      </div>
+      <div class="cf-flow-wrap">
+        <div class="cf-flow-k">How Capability Fit runs</div>
+        <div class="cf-flow">
+          <div class="cf-node start">Task</div>
+          <div class="cf-arrow"></div>
+          <div class="cf-node">Required skill level</div>
+          <div class="cf-arrow"></div>
+          <div class="cf-node">Find capable employees</div>
+          <div class="cf-arrow"></div>
+          <div class="cf-node hi">Remove overqualified when lower-cost capacity exists</div>
+          <div class="cf-arrow"></div>
+          <div class="cf-node">Check workload and availability</div>
+          <div class="cf-arrow"></div>
+          <div class="cf-node">Optimize team</div>
+          <div class="cf-arrow"></div>
+          <div class="cf-node end">Best-Fit Allocation</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11 INSIDE THE SYSTEM -->
+  <section class="sheet" data-t="Inside the system" data-a="Part 3 · How it thinks">
+    <div class="head">
+      <div class="tagline">Inside the system</div>
+      <h2>Three parts do the real work.</h2>
+    </div>
+    <div class="tabs" id="tabs">
+      <button class="tab sel" data-p="g">Finding capable people</button>
+      <button class="tab" data-p="o">Building the team</button>
+      <button class="tab" data-p="r">Checking the risk</button>
+    </div>
+
+    <div class="pane on" id="p-g">
+      <p class="lede" style="margin-top:0">Skills are stored as a map of connections. When a project needs <span class="cy">FastAPI</span> at a mid level, we find everyone capable at that level, then Capability Fit filters out anyone overqualified for the task.</p>
+      <div class="graph">
+        <svg style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true">
+          <g stroke="rgba(143,222,255,.35)" stroke-width="1">
+            <line x1="50%" y1="50%" x2="19%" y2="24%"/><line x1="50%" y1="50%" x2="81%" y2="24%"/>
+            <line x1="50%" y1="50%" x2="17%" y2="76%"/><line x1="50%" y1="50%" x2="83%" y2="76%"/>
+          </g>
+          <g stroke="rgba(255,201,106,.5)" stroke-width="1" stroke-dasharray="3 4">
+            <line x1="50%" y1="50%" x2="50%" y2="13%"/><line x1="50%" y1="50%" x2="50%" y2="87%"/>
+          </g>
+        </svg>
+        <div class="gn" style="left:19%;top:24%">Python</div>
+        <div class="gn" style="left:81%;top:24%">Django</div>
+        <div class="gn" style="left:17%;top:76%">REST APIs</div>
+        <div class="gn" style="left:83%;top:76%">Async work</div>
+        <div class="gn who" style="left:50%;top:13%">Aarav · 4 yrs</div>
+        <div class="gn who" style="left:50%;top:87%">Meera · 2 yrs</div>
+        <div class="gn core" style="left:50%;top:50%">FastAPI</div>
+      </div>
+      <div class="mini" style="margin-top:.9rem">Plain word search finds 2 people · skill map finds 11 · Capability Fit narrows to 6 at the right level</div>
+    </div>
+
+    <div class="pane" id="p-o">
+      <p class="lede" style="margin-top:0">Three possible teams for the same project. Scoring runs with criticality-adjusted weights. For a low-criticality task, the shortlist looks different than it would for a high-criticality one.</p>
+      <div class="cands">
+        <div class="cand win"><div><div class="who">Team B</div><div class="sub">Aarav · Riya · Karan · Nisha</div></div><div class="m">Skills <b>91%</b> · Busy <b>78%</b><br><span style="color:var(--cyan)">Best fit for a high-criticality task</span></div></div>
+        <div class="cand"><div><div class="who">Team A</div><div class="sub">Aarav · Riya · Dev · Karan</div></div><div class="m">Skills <b>94%</b> · Busy <b>121%</b><br><span style="color:var(--red)">Nobody has the hours</span></div></div>
+        <div class="cand"><div><div class="who">Team C</div><div class="sub">Meera · Nisha · Dev · Riya</div></div><div class="m">Skills <b>72%</b> · Busy <b>61%</b><br><span style="color:var(--amber)">Better fit for a low-criticality task</span></div></div>
+      </div>
+      <div class="mini" style="margin-top:.9rem">Rules · every skill covered · team size · nobody past a full workload · Capability Fit applied · criticality guides the weights</div>
+    </div>
+
+    <div class="pane" id="p-r">
+      <p class="lede" style="margin-top:0">Before anyone starts, the plan gets a risk score, based on how similar projects in the past actually turned out.</p>
+      <div class="meter"><div class="needle" style="left:18%"></div></div>
+      <div class="mscale"><span>Low</span><span>Keep an eye on it</span><span>High</span></div>
+      <div class="quad" style="margin-top:1.5rem">
+        <div class="q"><div class="k">It looks at</div><h3>Missing skills</h3><p>The gap between what the project needs and what this team can prove they have done.</p></div>
+        <div class="q"><div class="k">It looks at</div><h3>How busy they are</h3><p>How much of the team's time is already promised to other work.</p></div>
+        <div class="q"><div class="k">It looks at</div><h3>Time left</h3><p>How much work there is, against the date the client has given you.</p></div>
+        <div class="q"><div class="k">It looks at</div><h3>Criticality gap</h3><p>Whether a high-criticality project is being handled by a team scored for lower-priority work.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12 REASONS -->
+  <section class="sheet" data-t="Why these people" data-a="Part 3 · How it thinks">
+    <div class="head">
+      <div class="tagline">Why these people · pick a name</div>
+      <h2>"Why her, and not him?"</h2>
+      <p class="lede">The first thing any manager asks. Here is the honest answer, factor by factor. Capability Fit and criticality both sit inside the score, so overqualified people are quietly deprioritized on routine tasks, and top talent is drawn in when urgency demands it.</p>
+    </div>
+    <div class="people" id="people"></div>
+    <div class="srows" id="srows"></div>
+    <div class="verdict-line" id="sfoot"></div>
+  </section>
+
+  <!-- 13 WHAT-IF -->
+  <section class="sheet" data-t="Urgent work lands" data-a="Part 3 · How it thinks">
+    <div class="head">
+      <div class="tagline">What-if · urgent work lands mid-project</div>
+      <h2>Normal project already staffed.<br>Then something urgent arrives.</h2>
+      <p class="lede">A website revamp is running with the top backend engineer on it. A payments outage is reported, at High criticality. Try each option and watch the risk on both projects update together.</p>
+    </div>
+    <div class="wi-radios" id="wiRadios"></div>
+    <div class="wiprojects">
+      <div class="wipp" id="wipA">
+        <div class="wipp-h"><div class="wipp-t">Website revamp</div><div class="wipp-c norm">Normal</div></div>
+        <div class="wipp-team" id="teamA"></div>
+        <div class="wipp-m">
+          <div class="wipp-mi"><div class="k">Skills</div><div class="v" id="skA"></div></div>
+          <div class="wipp-mi"><div class="k">Busy</div><div class="v" id="buA"></div></div>
+          <div class="wipp-mi"><div class="k">Risk</div><div class="v" id="rkA"></div></div>
+        </div>
+      </div>
+      <div class="wipp crit" id="wipB">
+        <div class="wipp-h"><div class="wipp-t">Payments outage</div><div class="wipp-c crit">High</div></div>
+        <div class="wipp-team" id="teamB"></div>
+        <div class="wipp-m">
+          <div class="wipp-mi"><div class="k">Skills</div><div class="v" id="skB"></div></div>
+          <div class="wipp-mi"><div class="k">Busy</div><div class="v" id="buB"></div></div>
+          <div class="wipp-mi"><div class="k">Risk</div><div class="v" id="rkB"></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="wi-verdict" id="wiNote"></div>
+  </section>
+
+  <!-- 14 OUTCOMES -->
+  <section class="sheet" data-t="What you get" data-a="Part 3 · How it thinks">
+    <div class="head">
+      <div class="tagline">What you get</div>
+      <h2>What a manager actually walks away with.</h2>
+    </div>
+    <div class="rows">
+      <details open>
+        <summary><span class="mark">Fit</span><h3>Right person, not just the best on paper</h3><span class="pm"></span></summary>
+        <div class="dbody">Capability Fit picks the least-overqualified available person who can deliver reliably. Skill match, finished projects, performance, workload, availability, and criticality all counted together. What someone has actually delivered matters more than what their profile claims.</div>
+      </details>
+      <details>
+        <summary><span class="mark">Team</span><h3>A team that works as a whole</h3><span class="pm"></span></summary>
+        <div class="dbody">Every skill the project needs is covered, nobody doubles up on the same strength, and nobody is pushed past a full workload.</div>
+      </details>
+      <details>
+        <summary><span class="mark">Speed</span><h3>Days of work become a few minutes</h3><span class="pm"></span></summary>
+        <div class="dbody">Choosing a team stops holding up the start of the project. And because trying another option is quick, managers actually compare instead of settling for the first idea.</div>
+      </details>
+      <details>
+        <summary><span class="mark">Priority</span><h3>Urgent work gets the right people</h3><span class="pm"></span></summary>
+        <div class="dbody">When high-criticality work lands, the system looks at the whole picture. It can suggest pulling top talent off lower-priority work, and it shows exactly what that costs the other project.</div>
+      </details>
+      <details>
+        <summary><span class="mark">Trust</span><h3>The reasons stay on record</h3><span class="pm"></span></summary>
+        <div class="dbody">Each choice lists what led to it, and the people who were not chosen can be compared side by side. Months later, you can still look back and see why the team was built that way.</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- 15 END -->
+  <section class="sheet end" data-t="Thank you" data-a="Close">
+    <div class="tagline">Binary Duo · Team ID 11</div>
+    <h1>Thank you.</h1>
+    <p class="lede">Happy to open up any part of the system, walk through Capability Fit or the criticality logic, or talk through any decision behind the design.</p>
+    <div class="sign">
+      <div><div class="k">Presented by</div><div class="v">Divya Kansara</div></div>
+      <div><div class="k">Presented by</div><div class="v">Sara Mansuri</div></div>
+      <div><div class="k">Institution</div><div class="v">GLS University</div></div>
+      <div><div class="k">Event</div><div class="v">Nexus Hackathon</div></div>
+    </div>
+  </section>
+
+</div>
+
+<div id="track" style="width:0"></div>
+<div id="bar">
+  <div class="bar-l">
+    <button class="btn" id="idxBtn" aria-label="Slide list">☰</button>
+    <span class="proj">AI-Powered Intelligent Employee Task Assignment System</span>
+  </div>
+  <div class="bar-r">
+    <span class="pager"><b id="pgN">01</b> / <span id="pgT">15</span></span>
+    <button class="btn" id="prev" aria-label="Previous">←</button>
+    <button class="btn" id="next" aria-label="Next">→</button>
+  </div>
+</div>
+
+<div id="index">
+  <div class="tagline">Jump to any slide</div>
+  <div class="idx-list" id="idxList"></div>
+</div>
+
+<script>
+(function(){
+  'use strict';
+  var $=function(s,r){return (r||document).querySelector(s);};
+  var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));};
+  var pad=function(n){return (n<10?'0':'')+n;};
+
+  var sheets=$$('.sheet'), i=0, track=$('#track'), idx=$('#index');
+
+  sheets.forEach(function(s,k){
+    var d=document.createElement('div');
+    d.className='stamp';
+    d.innerHTML='<b>Slide '+pad(k+1)+' / '+pad(sheets.length)+'</b><br>Binary Duo · Team 11';
+    s.insertBefore(d,s.firstChild);
+    if(s.dataset.a){
+      var a=document.createElement('div');
+      a.className='act';
+      a.textContent=s.dataset.a;
+      s.insertBefore(a,s.firstChild);
+    }
+  });
+
+  function go(n){
+    i=n<0?0:(n>sheets.length-1?sheets.length-1:n);
+    sheets.forEach(function(s,k){ s.classList.toggle('on',k===i); if(k===i)s.scrollTop=0; });
+    track.style.width=(i/(sheets.length-1)*100)+'%';
+    $('#pgN').textContent=pad(i+1);
+    $$('.idx-item').forEach(function(b){ b.classList.toggle('here', +b.dataset.k===i); });
+    if(sheets[i].dataset.t==='What it costs') bars();
+  }
+  $('#pgT').textContent=pad(sheets.length);
+  $('#next').onclick=function(){go(i+1);};
+  $('#prev').onclick=function(){go(i-1);};
+  $('#idxBtn').onclick=function(){idx.classList.toggle('on');};
+  $$('[data-go]').forEach(function(b){b.onclick=function(){go(+b.dataset.go);};});
+
+  var lastAct=null;
+  sheets.forEach(function(s,k){
+    var a=s.dataset.a||'';
+    if(a!==lastAct){
+      var h=document.createElement('div');
+      h.className='idx-act';
+      h.textContent=a;
+      $('#idxList').appendChild(h);
+      lastAct=a;
+    }
+    var b=document.createElement('button');
+    b.className='idx-item';
+    b.dataset.k=k;
+    b.innerHTML='<span>'+pad(k+1)+'</span>'+s.dataset.t;
+    b.onclick=function(){go(k);idx.classList.remove('on');};
+    $('#idxList').appendChild(b);
+  });
+
+  document.addEventListener('keydown',function(e){
+    var k=(e.key||'').toLowerCase();
+    if(k==='escape'){idx.classList.remove('on');return;}
+    if(k==='arrowright'||k==='pagedown'||k===' '){e.preventDefault();go(i+1);}
+    else if(k==='arrowleft'||k==='pageup'){e.preventDefault();go(i-1);}
+    else if(k==='o'){idx.classList.toggle('on');}
+    else if(k==='home'){go(0);}
+    else if(k==='end'){go(sheets.length-1);}
+    else if(k==='f'){ if(!document.fullscreenElement){ if(document.documentElement.requestFullscreen)document.documentElement.requestFullscreen(); } else { document.exitFullscreen(); } }
+  });
+
+  var sx=0,sy=0;
+  document.addEventListener('touchstart',function(e){sx=e.changedTouches[0].clientX;sy=e.changedTouches[0].clientY;},{passive:true});
+  document.addEventListener('touchend',function(e){
+    var dx=e.changedTouches[0].clientX-sx, dy=e.changedTouches[0].clientY-sy;
+    if(Math.abs(dx)>55 && Math.abs(dx)>Math.abs(dy)*1.6) go(dx<0?i+1:i-1);
+  },{passive:true});
+
+  function bars(){
+    var f=$$('#wl .wl-f');
+    f.forEach(function(el){el.style.width='0';});
+    setTimeout(function(){ f.forEach(function(el,k){ setTimeout(function(){ el.style.width=(el.dataset.v*0.714)+'%'; },k*90); }); },120);
+  }
+
+  /* ---- 07 journey ---- */
+  var J=[
+    ['Sign in','The manager logs in with their work account. The system checks their role and opens the dashboard.','Sign in screen'],
+    ['Start a new project','From the dashboard, the manager clicks "New project". A blank card opens, ready to be described.','Dashboard'],
+    ['Fill in the essentials','Only what the manager already knows: name, description in plain words, team size, deadline, and criticality (Low, Medium, or High).','New project screen'],
+    ['Add optional details, if known','Number of integrations, availability level, security level, compliance. Only if the manager already has these scoped. Otherwise skip.','New project screen'],
+    ['AI extracts the requirements','The AI reads the description and pulls out the skills, roles and tools it thinks the project will need. Nothing runs yet.','Requirements review'],
+    ['Validate the extraction','The manager checks what the AI understood. Fix anything wrong, confirm anything missing, then release the plan for optimization.','Requirements review'],
+    ['Review the suggested team','The system returns a full team, ranked options next to it, and a headline risk score. All in one view.','Suggested team screen'],
+    ['Read why each person was picked','The manager taps a name. The reasons open up: what helped that person get picked, what counted against them, and by how much.','Reasons screen'],
+    ['Try a change','If something feels off, the manager flips a switch. The plan is rebuilt straight away. Urgent work landing later also comes through here.','What-if screen'],
+    ['Approve the plan','When the plan looks right, one tap on "Approve" sends the assignments to everyone involved and updates the project store.','Suggested team screen']
+  ];
+  var jsteps=$('#jsteps');
+  J.forEach(function(p,k){
+    var b=document.createElement('button');
+    b.className='jnode'+(k===0?' sel':'');
+    b.innerHTML='<span class="i">'+pad(k+1)+'</span><span class="nm">'+p[0]+'</span>';
+    b.onclick=function(){ $$('#jsteps .jnode').forEach(function(x){x.classList.remove('sel');}); b.classList.add('sel'); showJ(k); };
+    jsteps.appendChild(b);
+  });
+  function showJ(k){
+    var p=J[k];
+    $('#jKick').textContent='Step '+pad(k+1);
+    $('#jTitle').textContent=p[0];
+    $('#jBody').textContent=p[1];
+    $('#jScreen').textContent=p[2];
+  }
+  showJ(0);
+
+  /* ---- 08 pipeline ---- */
+  var P=[
+    ['Reading the brief','The system reads what you wrote and lists the skills, roles and tools the project will need, including the ones you did not spell out.','What you wrote','A clear list of required skills and roles',['LLM','Sentence Transformers']],
+    ['Reading the criticality','It picks up the criticality level you set (Low, Medium, or High). This decides how heavily to weight skill match, availability, and past performance.','The criticality level you set','A set of scoring weights the rest of the pipeline will use',['Rules engine']],
+    ['Finding capable people','It searches a map of people and their skills to find everyone who could do the work. Includes people with close-enough experience through the skill map.','The list of required skills and levels','A pool of capable employees',['Neo4j','PostgreSQL']],
+    ['Applying Capability Fit','It removes overqualified options when lower-cost capacity exists. Star performers stay reserved for work that actually needs their level.','The capable pool','A right-sized shortlist of candidates',['Rules engine','scikit-learn']],
+    ['Scoring each person','The shortlist is checked on five things: skills, past projects, performance, how busy they are, and when they are free. Criticality weights shift how much each factor counts.','The shortlist and criticality weights','A score for each person, with the reasons behind it',['scikit-learn']],
+    ['Building the team','It tries many combinations of people and keeps the one that covers every skill without pushing anyone past a full workload.','Scored people and your limits','A few workable teams, best one first',['Google OR-Tools']],
+    ['Best-fit allocation','You get the suggested team with tasks already shared out, plus the next-best options so you can compare instead of just accepting.','The workable teams','A team sheet and its alternatives',['FastAPI','React']],
+    ['Risk check','A model that learned from past projects gives this plan a risk score before any work begins. Higher criticality raises the bar for what counts as low risk.','The team sheet and project details','A risk score and what is driving it',['XGBoost']],
+    ['Explaining the reasons','The score is turned into plain reasons: which things helped a person get picked, which things counted against them, and by how much.','The risk score and person scores','A short explanation for every name',['SHAP']]
+  ];
+  var pipe=$('#pipe');
+  P.forEach(function(p,k){
+    var b=document.createElement('button');
+    b.className='node'+(k===0?' sel':'');
+    b.innerHTML='<span class="i">'+pad(k+1)+'</span><span class="nm">'+p[0]+'</span>';
+    b.onclick=function(){
+      $$('#pipe .node').forEach(function(x){x.classList.remove('sel');});
+      b.classList.add('sel'); showP(k);
+      if(window.matchMedia('(max-width:860px)').matches) $('#detail').scrollIntoView({behavior:'smooth',block:'nearest'});
+    };
+    pipe.appendChild(b);
+  });
+  function showP(k){
+    var p=P[k];
+    $('#dKick').textContent='Step '+pad(k+1);
+    $('#dTitle').textContent=p[0];
+    $('#dBody').textContent=p[1];
+    $('#dIn').textContent=p[2];
+    $('#dOut').textContent=p[3];
+    $('#dTags').innerHTML=p[4].map(function(t){return '<span class="tag">'+t+'</span>';}).join('');
+  }
+  showP(0);
+
+  /* ---- 09 criticality ---- */
+  var CT={
+    low:{n:'Low criticality',d:'Small internal work, cleanup tasks, documentation, low-stakes polish. The impact of a delay is minimal.',
+      p:'The system leans on availability and gives mid-level and junior people a real chance. Capability Fit works hardest here, keeping top talent free for bigger work.',
+      w:[35,25,65,30]},
+    med:{n:'Medium criticality',d:'A standard client project on a comfortable deadline. This is the everyday setting.',
+      p:'A balanced weighting. Skill match and availability count roughly the same. This is the default for most projects.',
+      w:[55,45,55,50]},
+    high:{n:'High criticality',d:'A client milestone, a launch push, a production outage, or an urgent client escalation. Every hour matters.',
+      p:'Skill match and similar past work dominate. Capability Fit relaxes, and the system will suggest pulling top talent off lower-priority projects, showing what that costs the other work.',
+      w:[95,85,30,90]}
+  };
+  function showCT(k){
+    var c=CT[k];
+    $('#ctName').textContent=c.n;
+    $('#ctDesc').textContent=c.d;
+    $('#ctPolicy').textContent=c.p;
+    var ids=['#wSkill','#wPerf','#wAvail','#wPast'];
+    var vs=['#vSkill','#vPerf','#vAvail','#vPast'];
+    c.w.forEach(function(v,j){ $(ids[j]).style.width=v+'%'; $(vs[j]).textContent=v+'%'; });
+  }
+  $$('#critHero .cchip').forEach(function(el){
+    el.onclick=function(){ $$('#critHero .cchip').forEach(function(x){x.classList.remove('sel');}); el.classList.add('sel'); showCT(el.dataset.c); };
+  });
+  showCT('high');
+
+  /* ---- 11 tabs ---- */
+  $$('#tabs .tab').forEach(function(t){
+    t.onclick=function(){
+      $$('#tabs .tab').forEach(function(x){x.classList.remove('sel');});
+      $$('#p-g,#p-o,#p-r').forEach(function(x){x.classList.remove('on');});
+      t.classList.add('sel'); $('#p-'+t.dataset.p).classList.add('on');
+    };
+  });
+
+  /* ---- 12 reasons ---- */
+  var S={
+    'Aarav Mehta':{
+      f:[['Skills match the project',.34],['Finished two very similar projects',.26],['Strong track record',.12],['Fits the criticality profile',.10],['Already 78% booked',-.05]],
+      n:'Backend lead · 92% match. Not the most free person, and the system says so. His past work on almost the same kind of project outweighed it, and High criticality pushed skill match up in the calculation.'},
+    'Riya Shah':{
+      f:[['Deep React and Tailwind work',.31],['Free from next sprint',.21],['Used to working with designers',.15],['Strong track record',.09],['New to this industry',-.07]],
+      n:'Frontend · 88% match. Being free mattered a lot here. She is the only strong frontend person available in this window.'},
+    'Nisha Verma':{
+      f:[['Knows Neo4j and PostgreSQL',.29],['Only 46% booked',.19],['Right-level match, not overqualified',.14],['Fits the criticality profile',.08],['Still junior on this stack',-.11]],
+      n:'Data · 85% match. Capability Fit picked her over a senior data engineer because she is the right level for this task. The team pairs her with Aarav so the experience gap is covered.'}
+  };
+  var people=$('#people');
+  Object.keys(S).forEach(function(n,k){
+    var b=document.createElement('button');
+    b.className='pbtn'+(k===0?' sel':''); b.textContent=n;
+    b.onclick=function(){$$('#people .pbtn').forEach(function(x){x.classList.remove('sel');});b.classList.add('sel');drawS(n);};
+    people.appendChild(b);
+  });
+  function drawS(n){
+    var d=S[n];
+    $('#srows').innerHTML=d.f.map(function(f){
+      var pos=f[1]>=0, w=Math.abs(f[1])/.36*47;
+      return '<div class="srow"><div class="l">'+f[0]+'</div>'+
+        '<div class="st"><span class="mid"></span><div class="sb" style="'+(pos?'left:50%':'right:50%')+';width:'+w+'%;background:'+(pos?'var(--cyan)':'var(--amber)')+'"></div></div>'+
+        '<div class="v" style="color:'+(pos?'var(--cyan)':'var(--amber)')+'">'+(pos?'+':'')+f[1].toFixed(2)+'</div></div>';
+    }).join('');
+    $('#sfoot').textContent=d.n;
+  }
+  drawS('Aarav Mehta');
+
+  /* ---- 13 what-if ---- */
+  var SCEN=[
+    {lbl:'Normal state · one project',
+     sub:'The website revamp is running. Aarav is on it. Nothing urgent has landed yet.',
+     A:{team:'Aarav · Riya · Karan · Nisha',sk:91,bu:78,rk:18,rc:'var(--cyan)'},
+     B:null,
+     note:'A clean plan. The team is well matched, workload is healthy, and there is no urgent work competing for attention.'},
+    {lbl:'Urgent work lands · ignore priority',
+     sub:'A payments outage is reported. The system just grabs whoever is free, without factoring in that this is High criticality.',
+     A:{team:'Aarav · Riya · Karan · Nisha',sk:91,bu:78,rk:18,rc:'var(--cyan)'},
+     B:{team:'Meera · Dev',sk:62,bu:42,rk:71,rc:'var(--red)'},
+     note:'The urgent work gets whoever is free, not who is right for it. Its risk climbs sharply. This is the pattern the criticality feature is here to prevent.'},
+    {lbl:'Urgent work lands · reassign top talent',
+     sub:'System recommends pulling Aarav from the normal project onto the urgent one. Dev backfills the normal project.',
+     A:{team:'Dev · Riya · Karan · Nisha',sk:82,bu:76,rk:34,rc:'var(--amber)'},
+     B:{team:'Aarav · Meera',sk:89,bu:71,rk:26,rc:'var(--cyan)'},
+     note:'Both projects are workable. The urgent one gets the top match it needs. The normal one takes a modest hit, well within tolerance. This is what the system suggests by default when criticality is set to High.'},
+    {lbl:'Urgent work lands · split top talent 50/50',
+     sub:'Aarav splits time across both projects. Keeps some coverage on the normal work while giving the urgent task real skill.',
+     A:{team:'Aarav (50%) · Riya · Karan · Nisha',sk:87,bu:88,rk:41,rc:'var(--amber)'},
+     B:{team:'Aarav (50%) · Meera',sk:78,bu:84,rk:48,rc:'var(--amber)'},
+     note:'A middle path. Neither project is at full strength and Aarav is now close to a full workload. Useful when both tasks need to move forward at the same time.'}
+  ];
+  var wiRadios=$('#wiRadios');
+  SCEN.forEach(function(s,k){
+    var b=document.createElement('button');
+    b.className='wir'+(k===0?' on':'');
+    b.innerHTML='<span class="dot"></span><span class="txt"><span class="lbl">'+s.lbl+'</span><span class="sub">'+s.sub+'</span></span>';
+    b.onclick=function(){ $$('#wiRadios .wir').forEach(function(x){x.classList.remove('on');}); b.classList.add('on'); drawWI(k); };
+    wiRadios.appendChild(b);
+  });
+  function drawWI(k){
+    var s=SCEN[k];
+    $('#teamA').textContent=s.A.team;
+    $('#skA').textContent=s.A.sk+'%';
+    $('#buA').textContent=s.A.bu+'%';
+    $('#rkA').textContent=s.A.rk+'%';
+    $('#rkA').style.color=s.A.rc;
+    $('#buA').style.color=s.A.bu>100?'var(--red)':(s.A.bu>85?'var(--amber)':'var(--chalk)');
+    if(s.B){
+      $('#wipB').classList.remove('hide');
+      $('#teamB').textContent=s.B.team;
+      $('#skB').textContent=s.B.sk+'%';
+      $('#buB').textContent=s.B.bu+'%';
+      $('#rkB').textContent=s.B.rk+'%';
+      $('#rkB').style.color=s.B.rc;
+      $('#buB').style.color=s.B.bu>100?'var(--red)':(s.B.bu>85?'var(--amber)':'var(--chalk)');
+    } else {
+      $('#wipB').classList.add('hide');
+      $('#teamB').textContent='No urgent work yet';
+      $('#skB').textContent='n/a';
+      $('#buB').textContent='n/a';
+      $('#rkB').textContent='n/a';
+      $('#rkB').style.color='var(--faint)';
+    }
+    $('#wiNote').textContent=s.note;
+  }
+  drawWI(0);
+
+  go(0);
+})();
+</script>
+</body>
+</html>
